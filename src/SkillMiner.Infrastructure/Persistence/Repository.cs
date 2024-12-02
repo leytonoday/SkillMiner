@@ -20,19 +20,17 @@ public abstract class Repository<TEntity, TDatabaseContext>
         DbSet = Context.Set<TEntity>();
     }
 
-    /// <inheritdoc/>
     public virtual Task AddAsync(TEntity entity, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        // We know that the Add here isn't gonna be querying the
+        // We know that the Add here isn't going to be querying the
         // database to create the value for a column, so there's no blocking.
         // So we just use Add to avoid the overhead of AddAsync
         DbSet.Add(entity);
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc/>
     public virtual Task RemoveAsync(TEntity entity, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -41,7 +39,6 @@ public abstract class Repository<TEntity, TDatabaseContext>
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc/>
     public virtual Task UpdateAsync(TEntity entity, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -50,13 +47,11 @@ public abstract class Repository<TEntity, TDatabaseContext>
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc/>
     public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await GetByConditionAsync(null, cancellationToken);
     }
 
-    /// <inheritdoc/>
     public virtual async Task<IEnumerable<TEntity>> GetByConditionAsync(Expression<Func<TEntity, bool>>? condition, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -74,7 +69,6 @@ public abstract class Repository<TEntity, TDatabaseContext, TId>(TDatabaseContex
     where TEntity : class, IEntity<TId>
     where TDatabaseContext : DbContext
 {
-    /// <inheritdoc/>
     public virtual async Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

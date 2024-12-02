@@ -36,7 +36,7 @@ public interface IEntity
 /// Represents an entity that has a single primary key.
 /// </summary>
 /// <typeparam name="TId">The type of the primary key of this entity.</typeparam>
-public interface IEntity<TId> : IEntity
+public interface IEntity<TId> : IEntity where TId : EntityId
 {
     /// <summary>
     /// Id of the <see cref="IEntity{TId}"/>.

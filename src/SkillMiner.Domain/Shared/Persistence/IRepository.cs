@@ -25,7 +25,7 @@ public interface IRepository<TEntity> where TEntity : class, IEntity
 /// </summary>
 /// <typeparam name="TEntity">The type of the entity.</typeparam>
 /// <typeparam name="TId">The type of the entity's primary key.</typeparam>
-public interface IRepository<TEntity, in TId> : IRepository<TEntity> where TEntity : class, IEntity<TId>
+public interface IRepository<TEntity, in TId> : IRepository<TEntity> where TEntity : class, IEntity<TId> where TId : EntityId
 {
     public Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken);
 }

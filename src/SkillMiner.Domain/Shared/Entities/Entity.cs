@@ -55,7 +55,7 @@ public abstract class Entity : IEntity, IAuditableEntity
 /// Represents a base class implementation of <see cref="IEntity{TId}"/>, for entities that have a single primary key.
 /// </summary>
 /// <typeparam name="TId"></typeparam>
-public abstract class Entity<TId> : Entity, IEntity<TId>
+public abstract class Entity<TId> : Entity, IEntity<TId> where TId : EntityId
 {
     /// <summary>
     /// Id of the <see cref="Entity{TId}"/>.
