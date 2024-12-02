@@ -1,4 +1,4 @@
-﻿namespace SkillMiner.Domain.Shared;
+﻿namespace SkillMiner.Domain.Shared.Persistence;
 
 /// <summary>
 /// Represents a unit of work for managing database transactions.

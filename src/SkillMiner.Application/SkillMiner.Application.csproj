@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SkillMiner.Domain\SkillMiner.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
