@@ -1,7 +1,7 @@
 ﻿namespace SkillMiner.Domain.Shared.Entities;
 
 /// <summary>
-/// Represents an auditable entity with date created and date updated properties.
+/// Represents an auditable entity.
 /// </summary>
 public interface IAuditableEntity
 {

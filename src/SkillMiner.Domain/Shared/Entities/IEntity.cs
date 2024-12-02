@@ -9,7 +9,7 @@ namespace SkillMiner.Domain.Shared.Entities;
 public interface IEntity
 {
     /// <summary>
-    /// Gets the collection of application events associated with the entity.
+    /// Collection of domain events associated with the entity.
     /// </summary>
     [NotMapped]
     IReadOnlyCollection<IDomainEvent> DomainEvents { get; }
