@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SkillMiner.Presentation.CLI": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "SKILL_MINER_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

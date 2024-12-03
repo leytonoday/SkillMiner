@@ -16,7 +16,7 @@ public class JobListing: Entity<JobListingId>
     public decimal? SalaryMin { get; private set; }
     public decimal? SalaryMax { get; private set; }
     public string Currency { get; private set; }
-    public string? Tags { get; private set; } 
+    public string? Tags { get; private set; }
 
     public JobListing(
         string title,

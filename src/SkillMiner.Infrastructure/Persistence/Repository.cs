@@ -66,6 +66,7 @@ public abstract class Repository<TEntity, TDatabaseContext>
 
 /// <inheritdoc cref="IRepository{TEntity, TId}"/>
 public abstract class Repository<TEntity, TDatabaseContext, TId>(TDatabaseContext context) : Repository<TEntity, TDatabaseContext>(context), IRepository<TEntity, TId>
+    where TId : EntityId
     where TEntity : class, IEntity<TId>
     where TDatabaseContext : DbContext
 {
