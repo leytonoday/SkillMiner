@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using SkillMiner.Domain.Entities.JobListingEntity;
+using SkillMiner.Infrastructure.Shared;
 
 namespace SkillMiner.Infrastructure.Persistence.EntityConfiguration;
 
@@ -10,14 +11,12 @@ internal sealed class JobListingConfiguration : IEntityTypeConfiguration<JobList
     {
         builder.ToTable(nameof(JobListing));
 
-        #region Configure Database Id
-        const string databaseIdName = $"DatabaseId";
-
-        builder.Property<int>(databaseIdName)
+        #region Configure Shadow Property Database Id
+        builder.Property<int>(Constants.DatabaseIdColumnName)
             .ValueGeneratedOnAdd()
             .IsRequired();
 
-        builder.HasKey(databaseIdName);
+        builder.HasKey(Constants.DatabaseIdColumnName);
         #endregion
 
         #region Configure Strongly Typed Domain Id
