@@ -9,9 +9,8 @@ public sealed class DatabaseContext(DbContextOptions<DatabaseContext> options) :
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
-        //modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
-        modelBuilder.ApplyConfiguration(new JobListingConfiguration());
+
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
     }
 
     public DbSet<JobListing> JobListings { get; set; }

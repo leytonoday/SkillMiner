@@ -1,10 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using System.CommandLine;
+using System.CommandLine.Builder;
+using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
 
-using SkillMiner.Infrastructure.Persistence;
-using SkillMiner.Shared;
-
-Console.WriteLine("Hello, World!");
-
-var temp = Utils.IsDevelopment();
-
-Console.WriteLine(temp);
+CommandLineBuilder BuildCommandLine()
+{
+    var root = new RootCommand();
+    root.AddCommand();
+}

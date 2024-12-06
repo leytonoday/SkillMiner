@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkillMiner.Application", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkillMiner.Domain", "src\SkillMiner.Domain\SkillMiner.Domain.csproj", "{AA1CCDF7-7C16-48D1-8479-755D1ED17E63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillMiner.Shared", "src\SkillMiner.Shared\SkillMiner.Shared.csproj", "{064D6104-6E20-494A-8854-E0E558D079F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkillMiner.Shared", "src\SkillMiner.Shared\SkillMiner.Shared.csproj", "{064D6104-6E20-494A-8854-E0E558D079F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

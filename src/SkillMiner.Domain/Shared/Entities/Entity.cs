@@ -49,6 +49,8 @@ public abstract class Entity : IEntity, IAuditableEntity
     {
         if (await rule.IsBrokenAsync(cancellationToken)) throw new BusinessRuleBrokenException(rule.Message, rule.Code);
     }
+
+    public abstract bool IsValid();
 }
 
 /// <summary>

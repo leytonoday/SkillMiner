@@ -6,7 +6,6 @@ using SkillMiner.Domain.Shared.Events;
 
 namespace SkillMiner.Infrastructure.Persistence.Interceptors;
 
-
 /// <summary>
 /// Intercepts database context when saving changes, and publishes all domain events.
 /// </summary>

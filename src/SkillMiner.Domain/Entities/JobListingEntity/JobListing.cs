@@ -18,7 +18,14 @@ public class JobListing: Entity<JobListingId>
     public string Currency { get; private set; }
     public string? Tags { get; private set; }
 
-    public JobListing(
+    private JobListing() {}
+
+    public override bool IsValid()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static JobListing CreateNew(
         string title,
         string company,
         string location,
@@ -31,22 +38,24 @@ public class JobListing: Entity<JobListingId>
         decimal? salaryMax = null,
         DateTime? closingOnUtc = null,
         string? industry = null,
-        string? tags = null
-        )
+        string? tags = null)
     {
-        Title = title;
-        Company = company;
-        Location = location;
-        Description = description;
-        Url = url;
-        PostedOnUtc = postedOnUtc;
-        ClosingOnUtc = closingOnUtc;
-        EmploymentType = employmentType;
-        Industry = industry;
-        SalaryMin = salaryMin;
-        SalaryMax = salaryMax;
-        Currency = currency;
-        CreatedOnUtc = DateTime.UtcNow;
-        Tags = tags;
+        return new JobListing()
+        {
+            Title = title,
+            Company = company,
+            Location = location,
+            Description = description,
+            Url = url,
+            PostedOnUtc = postedOnUtc,
+            ClosingOnUtc = closingOnUtc,
+            EmploymentType = employmentType,
+            Industry = industry,
+            SalaryMin = salaryMin,
+            SalaryMax = salaryMax,
+            Currency = currency,
+            CreatedOnUtc = DateTime.UtcNow,
+            Tags = tags;
+        };
     }
 }
