@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SkillMiner.Application\SkillMiner.Application.csproj" />
+    <ProjectReference Include="..\SkillMiner.Infrastructure\SkillMiner.Infrastructure.csproj" />
+    <ProjectReference Include="..\SkillMiner.Shared\SkillMiner.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

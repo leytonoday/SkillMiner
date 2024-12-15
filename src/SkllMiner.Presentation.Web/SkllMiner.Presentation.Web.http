@@ -1,0 +1,6 @@
+@SkllMiner.Presentation.Web_HostAddress = http://localhost:5079
+
+GET {{SkllMiner.Presentation.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
