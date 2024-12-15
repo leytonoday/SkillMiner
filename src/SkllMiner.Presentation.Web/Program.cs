@@ -1,17 +1,14 @@
+using Microsoft.Extensions.DependencyInjection;
 using SkillMiner.Infrastructure;
+using SkillMiner.Infrastructure.BackgroundJobs;
+using SkillMiner.Presentation.Web.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+await SystemStartup.Start(builder.Configuration, builder.Services);
+builder.Services.ConfigurePresentation();
 
 var app = builder.Build();
-
-DependencyRegistration.RegisterDependencies(builder.Services, builder.Configuration);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

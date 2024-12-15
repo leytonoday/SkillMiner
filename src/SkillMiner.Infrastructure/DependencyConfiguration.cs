@@ -8,17 +8,27 @@ using SkillMiner.Domain.Entities.JobListingEntity;
 using SkillMiner.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using SkillMiner.Infrastructure.Persistence.Interceptors;
+using SkillMiner.Application.Abstractions.CommandQueue;
+using SkillMiner.Infrastructure.CommandQueue;
+using Quartz;
 
 namespace SkillMiner.Infrastructure;
 
-public static class DependencyRegistration
+public static class DependencyConfiguration
 {
-    public static void RegisterDependencies(this IServiceCollection services, IConfiguration configuration)
+    public static void ConfigureInfrastructureAndApplication(this IServiceCollection services, IConfiguration configuration)
     {
         var applicationAssembly = typeof(ApplicationAssemblyReference).Assembly;
-        var infrastructureAssembly = typeof(DependencyRegistration).Assembly;
+        var infrastructureAssembly = typeof(DependencyConfiguration).Assembly;
         
         services.AddSingleton(configuration);
+
+        // Quartz
+        services.AddQuartz();
+        services.AddQuartzHostedService(opt =>
+        {
+            opt.WaitForJobsToComplete = true;
+        });
 
         // Mediator
         services.AddMediatR(config => config.RegisterServicesFromAssembly(applicationAssembly));
@@ -32,21 +42,27 @@ public static class DependencyRegistration
         // Database services
         services.AddDatabaseServices(configuration);
 
+        // Command queue
+        services.AddScoped<ICommandQueueWriter, CommandQueueWriter>();
+        services.AddScoped<ICommandQueueReader, CommandQueueReader>();
+
         // Application Services
     }
 
     private static void AddDatabaseServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-
         services.AddScoped<IJobListingRepository, JobListingRepository>();
+
+        services.AddSingleton<UpdateAuditableEntitiesInterceptor>(); // Intercepts to update auditable entity properties
+        services.AddSingleton<DomainEventPublisherInterceptor>(); // Intercepts to publish domain events after saving changes
 
         services.AddDbContext<DatabaseContext>((provider, options) =>
         {
             // Setup database context
             options.UseSqlServer(configuration.GetConnectionString("SkillMiner"), optionsBuilder =>
             {
-                optionsBuilder.MigrationsAssembly(typeof(DependencyRegistration).Assembly.GetName().Name);
+                optionsBuilder.MigrationsAssembly(typeof(DependencyConfiguration).Assembly.GetName().Name);
             });
 
             options.EnableDetailedErrors();

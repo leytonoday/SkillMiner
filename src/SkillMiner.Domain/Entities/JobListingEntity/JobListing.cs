@@ -55,7 +55,7 @@ public class JobListing: Entity<JobListingId>
             SalaryMax = salaryMax,
             Currency = currency,
             CreatedOnUtc = DateTime.UtcNow,
-            Tags = tags;
+            Tags = tags
         };
     }
 }

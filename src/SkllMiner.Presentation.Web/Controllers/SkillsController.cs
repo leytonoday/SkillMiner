@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SkillMiner.Application.CQRS.JobListingEntity.Commands;
 using SkillMiner.Application.Shared.Results;
@@ -12,10 +13,10 @@ public class SkillsController
     (ISender sender)
     : ControllerBase
 {
-    [HttpPost("generate-desired-skills-by-job-title/{jobTitle}")]
-    public async Task<IActionResult> GenerateDesiredSkillsByJobTitle([FromRoute] string jobTitle, CancellationToken cancellationToken)
+    [HttpPost("generate-by-job-title/{jobTitle}")]
+    public async Task<IActionResult> GenerateSkillsByJobTitle([FromRoute] string jobTitle, CancellationToken cancellationToken)
     {
-        await sender.Send(new GenerateDesiredSkillsByJobTitleCommand(jobTitle), cancellationToken);
+        await sender.Send(new QueueGenerateSkillsByJobTitleCommand(jobTitle), cancellationToken);
         return Ok(Result.Success());
     }
 }
