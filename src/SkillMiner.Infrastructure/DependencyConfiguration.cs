@@ -11,6 +11,8 @@ using SkillMiner.Infrastructure.Persistence.Interceptors;
 using SkillMiner.Application.Abstractions.CommandQueue;
 using SkillMiner.Infrastructure.CommandQueue;
 using Quartz;
+using MediatR;
+using SkillMiner.Application.Abstractions.Behaviours;
 
 namespace SkillMiner.Infrastructure;
 
@@ -31,9 +33,14 @@ public static class DependencyConfiguration
         });
 
         // Mediator
-        services.AddMediatR(config => config.RegisterServicesFromAssembly(applicationAssembly));
+        services.AddMediatR(config =>
+        {
+            config.RegisterServicesFromAssemblies([infrastructureAssembly, applicationAssembly]);
+            config.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
+        });
 
         // Validation
+        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
         services.AddValidatorsFromAssembly(applicationAssembly);
 
         // Auto-mapper

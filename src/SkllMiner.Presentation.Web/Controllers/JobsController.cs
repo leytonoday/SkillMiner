@@ -7,16 +7,16 @@ using SkillMiner.Application.Shared.Results;
 namespace SkillMiner.Presentation.Web.Controllers;
 
 [ApiController]
-[Route("/api/{version:apiVersion}/skills")]
+[Route("/api/{version:apiVersion}/jobs")]
 [ApiVersion("1.0")]
-public class SkillsController
+public class JobsController
     (ISender sender)
     : ControllerBase
 {
-    [HttpPost("generate-by-job-title/{jobTitle}")]
-    public async Task<IActionResult> GenerateSkillsByJobTitle([FromRoute] string jobTitle, CancellationToken cancellationToken)
+    [HttpPost("web-scrape-jobs-by-title")]
+    public async Task<IActionResult> WebScrapeJobsByTitle([FromQuery(Name = "job-title")] string jobTitle, CancellationToken cancellationToken)
     {
-        await sender.Send(new QueueGenerateSkillsByJobTitleCommand(jobTitle), cancellationToken);
+        await sender.Send(new QueueWebScrapeJobsByTitleCommand(jobTitle), cancellationToken);
         return Ok(Result.Success());
     }
 }

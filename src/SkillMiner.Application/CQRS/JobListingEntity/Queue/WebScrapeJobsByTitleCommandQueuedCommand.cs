@@ -2,11 +2,11 @@
 
 namespace SkillMiner.Application.CQRS.JobListingEntity.Queue;
 
-public sealed record GenerateSkillsByJobTitleQueuedCommand(string JobTitle): QueuedCommand;
+public sealed record WebScrapeJobsByTitleCommandQueuedCommand(string JobTitle): QueuedCommand;
 
-public sealed class GenerateSkillsByJobTitleQueuedCommandHandler : IQueuedCommandHandler<GenerateSkillsByJobTitleQueuedCommand>
+public sealed class WebScrapeJobsByTitleCommandQueuedCommandHandler : IQueuedCommandHandler<WebScrapeJobsByTitleCommandQueuedCommand>
 {
-    public Task Handle(GenerateSkillsByJobTitleQueuedCommand request, CancellationToken cancellationToken)
+    public Task Handle(WebScrapeJobsByTitleCommandQueuedCommand request, CancellationToken cancellationToken)
     {
         //var jobListing = JobListing.CreateNew("TITLE",
         //    "COMAPNY",
@@ -20,6 +20,6 @@ public sealed class GenerateSkillsByJobTitleQueuedCommandHandler : IQueuedComman
         //await jobListingRepository.AddAsync(jobListing, cancellationToken);
         //await unitOfWork.CommitAsync(cancellationToken);
 
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }
