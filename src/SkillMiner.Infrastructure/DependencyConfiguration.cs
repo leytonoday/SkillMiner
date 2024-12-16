@@ -13,6 +13,7 @@ using SkillMiner.Infrastructure.CommandQueue;
 using Quartz;
 using MediatR;
 using SkillMiner.Application.Abstractions.Behaviours;
+using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
 
 namespace SkillMiner.Infrastructure;
 
@@ -40,7 +41,6 @@ public static class DependencyConfiguration
         });
 
         // Validation
-        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
         services.AddValidatorsFromAssembly(applicationAssembly);
 
         // Auto-mapper
@@ -60,6 +60,7 @@ public static class DependencyConfiguration
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IJobListingRepository, JobListingRepository>();
+        services.AddScoped<IWebScrapingTaskRepository, WebScrapingTaskRepository>();
 
         services.AddSingleton<UpdateAuditableEntitiesInterceptor>(); // Intercepts to update auditable entity properties
         services.AddSingleton<DomainEventPublisherInterceptor>(); // Intercepts to publish domain events after saving changes

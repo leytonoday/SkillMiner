@@ -1,4 +1,5 @@
-﻿using SkillMiner.Domain.Shared.Entities;
+﻿using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
+using SkillMiner.Domain.Shared.Entities;
 
 namespace SkillMiner.Domain.Entities.JobListingEntity;
 
@@ -18,6 +19,8 @@ public class JobListing: Entity<JobListingId>
     public string Currency { get; private set; }
     public string? Tags { get; private set; }
 
+    public WebScrapingTaskId WebScrapingTaskId { get; private set; }
+
     private JobListing() {}
 
     public override bool IsValid()
@@ -26,6 +29,7 @@ public class JobListing: Entity<JobListingId>
     }
 
     public static JobListing CreateNew(
+        WebScrapingTaskId webScrapingTaskId,
         string title,
         string company,
         string location,
@@ -42,6 +46,7 @@ public class JobListing: Entity<JobListingId>
     {
         return new JobListing()
         {
+            WebScrapingTaskId = webScrapingTaskId,
             Title = title,
             Company = company,
             Location = location,
