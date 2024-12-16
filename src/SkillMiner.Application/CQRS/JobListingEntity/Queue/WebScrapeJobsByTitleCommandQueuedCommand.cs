@@ -1,4 +1,7 @@
 ﻿using SkillMiner.Application.Abstractions.CommandQueue;
+using SkillMiner.Application.Services.WebScraper;
+using SkillMiner.Application.Shared.Results;
+using SkillMiner.Domain.Entities.JobListingEntity;
 using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
 using SkillMiner.Domain.Shared.Persistence;
 
@@ -8,8 +11,9 @@ public sealed record WebScrapeJobsByTitleCommandQueuedCommand(string JobTitle, W
 
 public sealed class WebScrapeJobsByTitleCommandQueuedCommandHandler
     (IWebScrapingTaskRepository webScrapingTaskRepository,
-    IUnitOfWork unitOfWork
-    )
+    IJobListingRepository jobListingRepository,
+    IEnumerable<IJobListingWebScraper> jobListingWebScrapers,
+    IUnitOfWork unitOfWork)
     : IQueuedCommandHandler<WebScrapeJobsByTitleCommandQueuedCommand>
 {
     public async Task Handle(WebScrapeJobsByTitleCommandQueuedCommand request, CancellationToken cancellationToken)
@@ -22,17 +26,25 @@ public sealed class WebScrapeJobsByTitleCommandQueuedCommandHandler
 
         try
         {
-            //var jobListing = JobListing.CreateNew("TITLE",
-            //    "COMAPNY",
-            //    "LOCATION",
-            //    "DESC",
-            //    "URL",
-            //    DateTime.UtcNow,
-            //    "USD",
-            //    EmploymentType.Apprenticeship);
+            if (!jobListingWebScrapers.Any())
+            {
+                throw new Exception("No IJobListingWebScraper implementations available.");
+            }
 
-            //await jobListingRepository.AddAsync(jobListing, cancellationToken);
-            //await unitOfWork.CommitAsync(cancellationToken);
+            foreach (IJobListingWebScraper webScraper in jobListingWebScrapers)
+            {
+                var result = await webScraper.ScrapeAsync(new JobListingWebScraperInput(request.JobTitle));
+                
+                foreach (Result<JobListing> jobListingResult in result.Where(x => x.Data is not null))
+                {
+                    if (jobListingResult.Data is not null)
+                    {
+                        continue;
+                    }
+
+                    await jobListingRepository.AddAsync(jobListingResult.Data, cancellationToken);
+                }
+            }
 
             webScrapingTask.MarkAsCompleted();
         } catch (Exception ex)
