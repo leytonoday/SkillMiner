@@ -13,10 +13,10 @@ public class JobsController
     (ISender sender)
     : ControllerBase
 {
-    [HttpPost("web-scrape-jobs-by-title")]
-    public async Task<IActionResult> WebScrapeJobsByTitle([FromQuery(Name = "job-title")] string jobTitle, CancellationToken cancellationToken)
+    [HttpPost("queue-web-scrape-jobs-by-title")]
+    public async Task<IActionResult> QueueWebScrapeJobsByTitle([FromQuery(Name = "job-title")] string jobTitle, CancellationToken cancellationToken)
     {
-        await sender.Send(new QueueWebScrapeJobsByTitleCommand(jobTitle), cancellationToken);
-        return Ok(Result.Success());
+        var result = await sender.Send(new QueueWebScrapeJobsByTitleCommand(jobTitle), cancellationToken);
+        return Ok(Result.Success(result));
     }
 }

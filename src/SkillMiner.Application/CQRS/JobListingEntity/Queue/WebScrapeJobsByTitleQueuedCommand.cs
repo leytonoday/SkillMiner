@@ -7,16 +7,16 @@ using SkillMiner.Domain.Shared.Persistence;
 
 namespace SkillMiner.Application.CQRS.JobListingEntity.Queue;
 
-public sealed record WebScrapeJobsByTitleCommandQueuedCommand(string JobTitle, WebScrapingTaskId WebScrapingTaskId) : QueuedCommand;
+public sealed record WebScrapeJobsByTitleQueuedCommand(string JobTitle, WebScrapingTaskId WebScrapingTaskId) : QueuedCommand;
 
-public sealed class WebScrapeJobsByTitleCommandQueuedCommandHandler
+public sealed class WebScrapeJobsByTitleQueuedCommandHandler
     (IWebScrapingTaskRepository webScrapingTaskRepository,
     IJobListingRepository jobListingRepository,
     IEnumerable<IJobListingWebScraper> jobListingWebScrapers,
     IUnitOfWork unitOfWork)
-    : IQueuedCommandHandler<WebScrapeJobsByTitleCommandQueuedCommand>
+    : IQueuedCommandHandler<WebScrapeJobsByTitleQueuedCommand>
 {
-    public async Task Handle(WebScrapeJobsByTitleCommandQueuedCommand request, CancellationToken cancellationToken)
+    public async Task Handle(WebScrapeJobsByTitleQueuedCommand request, CancellationToken cancellationToken)
     {
         var webScrapingTask = await webScrapingTaskRepository.GetByIdAsync(request.WebScrapingTaskId, cancellationToken)
             ?? throw new Exception("WebScrapingTaskJob Not Found");

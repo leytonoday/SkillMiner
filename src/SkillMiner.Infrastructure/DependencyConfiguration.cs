@@ -14,6 +14,8 @@ using Quartz;
 using MediatR;
 using SkillMiner.Application.Abstractions.Behaviours;
 using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
+using SkillMiner.Infrastructure.WebScrapers.JobListingWebScraper;
+using SkillMiner.Application.Services.WebScraper;
 
 namespace SkillMiner.Infrastructure;
 
@@ -54,6 +56,7 @@ public static class DependencyConfiguration
         services.AddScoped<ICommandQueueReader, CommandQueueReader>();
 
         // Application Services
+        services.AddScoped<IJobListingWebScraper, MicrosoftJobListingWebScraper>();
     }
 
     private static void AddDatabaseServices(this IServiceCollection services, IConfiguration configuration)
