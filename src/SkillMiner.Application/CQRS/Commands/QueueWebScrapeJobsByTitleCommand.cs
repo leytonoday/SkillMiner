@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
 using SkillMiner.Application.Abstractions.CommandQueue;
-using SkillMiner.Application.CQRS.JobListingEntity.Queue;
+using SkillMiner.Application.CQRS.Queue;
 using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
 using SkillMiner.Domain.Shared.Persistence;
 
-namespace SkillMiner.Application.CQRS.JobListingEntity.Commands;
+namespace SkillMiner.Application.CQRS.Commands;
 
 public record QueueWebScrapeJobsByTitleCommand(string JobTitle) : IRequest<Guid>;
 

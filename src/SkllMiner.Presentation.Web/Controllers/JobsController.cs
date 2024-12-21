@@ -1,7 +1,8 @@
 ﻿using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SkillMiner.Application.CQRS.JobListingEntity.Commands;
+using SkillMiner.Application.CQRS.Commands;
+using SkillMiner.Application.CQRS.Queries;
 using SkillMiner.Application.Shared.Results;
 
 namespace SkillMiner.Presentation.Web.Controllers;
@@ -17,6 +18,13 @@ public class JobsController
     public async Task<IActionResult> QueueWebScrapeJobsByTitle([FromQuery(Name = "job-title")] string jobTitle, CancellationToken cancellationToken)
     {
         var result = await sender.Send(new QueueWebScrapeJobsByTitleCommand(jobTitle), cancellationToken);
+        return Ok(Result.Success(result));
+    }
+
+    [HttpGet("get-web-scrape-job-status/{webScrapeTaskId}")]
+    public async Task<IActionResult> GetWebScrapeJobStatus(Guid webScrapeTaskId, CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetWebScrapeJobStatusQuery(new Domain.Entities.WebScrapingTaskEntity.WebScrapingTaskId(webScrapeTaskId)), cancellationToken);
         return Ok(Result.Success(result));
     }
 }
