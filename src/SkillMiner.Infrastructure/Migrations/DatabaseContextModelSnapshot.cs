@@ -50,7 +50,7 @@ namespace SkillMiner.Infrastructure.Migrations
                     b.ToTable("CommandQueueMessages", (string)null);
                 });
 
-            modelBuilder.Entity("SkillMiner.Domain.Entities.JobListingEntity.JobListing", b =>
+            modelBuilder.Entity("SkillMiner.Domain.Entities.MicrosoftJobListingEntity.MicrosoftJobListing", b =>
                 {
                     b.Property<int>("DatabaseId")
                         .ValueGeneratedOnAdd()
@@ -58,51 +58,49 @@ namespace SkillMiner.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DatabaseId"));
 
-                    b.Property<DateTime?>("ClosingOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Company")
-                        .IsRequired()
+                    b.Property<string>("Benefits")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedOnUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Currency")
-                        .IsRequired()
+                    b.Property<DateTime?>("DatePosted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Discipline")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
+                    b.Property<string>("EmploymentType")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EmploymentType")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Industry")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("JobNumber")
+                        .HasColumnType("int");
 
                     b.Property<string>("Location")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PostedOnUtc")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Overview")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("SalaryMax")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Profession")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("SalaryMin")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Qualifications")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Tags")
+                    b.Property<string>("Responsibilities")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoleType")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Travel")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedOnUtc")
@@ -115,15 +113,18 @@ namespace SkillMiner.Infrastructure.Migrations
                     b.Property<Guid>("WebScrapingTaskId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("WorkSite")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("DatabaseId");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("IX_JobListing_Id");
+                        .HasDatabaseName("IX_MicrosoftJobListing_Id");
 
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Id"), false);
 
-                    b.ToTable("JobListing", (string)null);
+                    b.ToTable("MicrosoftJobListing", (string)null);
                 });
 
             modelBuilder.Entity("SkillMiner.Domain.Entities.WebScrapingTaskEntity.WebScrapingTask", b =>
@@ -139,9 +140,6 @@ namespace SkillMiner.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedOnUtc")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");

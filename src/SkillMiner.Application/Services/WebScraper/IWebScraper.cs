@@ -6,5 +6,5 @@ public interface IWebScraper<TSubject, TInput>
     where TSubject : class
     where TInput : class
 {
-    public Task<IEnumerable<Result<TSubject>>> ScrapeAsync(TInput input);
+    public Task<Result<IEnumerable<TSubject>>> ScrapeAsync(TInput input, CancellationToken cancellationToken);
 }

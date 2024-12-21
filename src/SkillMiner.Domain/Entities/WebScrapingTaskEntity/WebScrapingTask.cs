@@ -12,8 +12,6 @@ public class WebScrapingTask: Entity<WebScrapingTaskId>
     
     public DateTime? CompletedOnUtc { get; private set; }
 
-    public string? ErrorMessage { get; private set; }
-
     private WebScrapingTask() {}
 
     public override bool IsValid()
@@ -43,9 +41,8 @@ public class WebScrapingTask: Entity<WebScrapingTaskId>
         CompletedOnUtc = DateTime.UtcNow;
     }
 
-    public void MarkAsFailed(string errorMessage)
+    public void MarkAsFailed()
     {
         Status = WebScrapingStatus.Failed;
-        ErrorMessage = errorMessage;
     }
 }

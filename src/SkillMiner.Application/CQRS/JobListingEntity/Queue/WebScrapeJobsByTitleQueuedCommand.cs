@@ -1,7 +1,6 @@
 ﻿using SkillMiner.Application.Abstractions.CommandQueue;
 using SkillMiner.Application.Services.WebScraper;
-using SkillMiner.Application.Shared.Results;
-using SkillMiner.Domain.Entities.JobListingEntity;
+using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
 using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
 using SkillMiner.Domain.Shared.Persistence;
 
@@ -11,8 +10,8 @@ public sealed record WebScrapeJobsByTitleQueuedCommand(string JobTitle, WebScrap
 
 public sealed class WebScrapeJobsByTitleQueuedCommandHandler
     (IWebScrapingTaskRepository webScrapingTaskRepository,
-    IJobListingRepository jobListingRepository,
-    IEnumerable<IJobListingWebScraper> jobListingWebScrapers,
+    IJobListingWebScraper<MicrosoftJobListing> microsoftJobListingWebScaper,
+    IMicrosoftJobListingRepository microsoftJobListingRepository,
     IUnitOfWork unitOfWork)
     : IQueuedCommandHandler<WebScrapeJobsByTitleQueuedCommand>
 {
@@ -26,31 +25,39 @@ public sealed class WebScrapeJobsByTitleQueuedCommandHandler
 
         try
         {
-            if (!jobListingWebScrapers.Any())
+            var webScraperInput = new JobListingWebScraperInput(webScrapingTask.Id, request.JobTitle);
+
+            var result = await microsoftJobListingWebScaper.ScrapeAsync(webScraperInput, cancellationToken);
+
+            // Failed for any reason.
+            if (!result.IsSuccess)
             {
-                throw new Exception("No IJobListingWebScraper implementations available.");
+                webScrapingTask.MarkAsFailed();
+                return;
             }
 
-            foreach (IJobListingWebScraper webScraper in jobListingWebScrapers)
+            // Succeeded, but there are no new job listings to scrape
+            if (result.IsSuccess && (result.Data is null || !result.Data.Any())) 
             {
-                var result = await webScraper.ScrapeAsync(new JobListingWebScraperInput(request.JobTitle));
-                
-                foreach (Result<JobListing> jobListingResult in result.Where(x => x.Data is not null))
-                {
-                    if (jobListingResult.Data is not null)
-                    {
-                        continue;
-                    }
-
-                    await jobListingRepository.AddAsync(jobListingResult.Data, cancellationToken);
-                }
+                webScrapingTask.MarkAsCompleted();
+                return;
             }
 
+            // Succeeded and there are new job listings. Add to repo.
+            foreach (var jobListing in result.Data!)
+            {
+                await microsoftJobListingRepository.AddAsync(jobListing, cancellationToken);
+            }
             webScrapingTask.MarkAsCompleted();
-        } catch (Exception ex)
+        } catch
         {
-            webScrapingTask.MarkAsFailed(ex.Message);
+            // If an exception is thrown for whatever reason (maybe a webscraping issue), then just mark the task as failed and re-throw so that the Command Queue Message Processor can try again.
+            webScrapingTask.MarkAsFailed();
+            throw;
         }
-        await unitOfWork.CommitAsync(cancellationToken);
+        finally
+        {
+            await unitOfWork.CommitAsync(cancellationToken);
+        }
     }
 }

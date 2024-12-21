@@ -1,7 +1,7 @@
-﻿using SkillMiner.Domain.Entities.JobListingEntity;
+﻿using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
 
 namespace SkillMiner.Application.Services.WebScraper;
 
-public record JobListingWebScraperInput(string JobTitle);
+public record JobListingWebScraperInput(WebScrapingTaskId WebScrapingTaskId, string JobTitle);
 
-public interface IJobListingWebScraper : IWebScraper<JobListing, JobListingWebScraperInput>;
+public interface IJobListingWebScraper<TReturn> : IWebScraper<TReturn, JobListingWebScraperInput> where TReturn : class;

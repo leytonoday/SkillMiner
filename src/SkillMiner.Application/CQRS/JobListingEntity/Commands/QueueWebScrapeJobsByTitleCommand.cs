@@ -14,6 +14,7 @@ public class QueueWebScrapeJobsByTitleCommandValidator : AbstractValidator<Queue
     public QueueWebScrapeJobsByTitleCommandValidator()
     {
         RuleFor(x => x.JobTitle)
+            .NotNull()
             .NotEmpty()
             .WithMessage("JobTitle cannot be null or empty.");
     }

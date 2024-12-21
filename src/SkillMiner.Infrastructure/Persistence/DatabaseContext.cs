@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SkillMiner.Domain.Entities.JobListingEntity;
+using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
 using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
 using SkillMiner.Infrastructure.CommandQueue;
 
@@ -15,7 +15,7 @@ public sealed class DatabaseContext(DbContextOptions<DatabaseContext> options) :
         modelBuilder.AddCommandMessageQueue();
     }
 
-    public DbSet<JobListing> JobListings { get; set; }
+    public DbSet<MicrosoftJobListing> MicrosoftJobListings { get; set; }
 
     public DbSet<WebScrapingTask> WebScrapingTasks { get; set; }
 }
