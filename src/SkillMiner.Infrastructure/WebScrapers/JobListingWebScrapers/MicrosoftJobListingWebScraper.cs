@@ -32,11 +32,10 @@ internal partial class MicrosoftJobListingWebScraper
     }
 
     /// <summary>
-    /// The Microsoft job board identified job listings with "Job Item Numbers" or "Job Numbers". This method will scrape all Job Item Numbers from
+    /// The Microsoft job board identifies job listings with "Job Item Numbers" or "Job Numbers". This method will scrape all Job Item Numbers from
     /// the Microsoft job board. 
     /// </summary>
     /// <param name="jobTitle">The job title to search the job board for.</param>
-    /// <param name="webScrapingTaskId">The Id of the <see cref="WebScrapingTask"/> that started this Webscraping.</param>
     /// <param name="maxPages">The upper limit of pages to search for new job listings for.</param>
     /// <param name="alreadyScrapedJobItemNumbers">A list of already webscraped job item numbers.</param>
     /// <param name="cancellationToken">Cancels the operation.</param>

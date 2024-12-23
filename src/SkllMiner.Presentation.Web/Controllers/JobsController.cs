@@ -27,5 +27,12 @@ public class JobsController
         var result = await sender.Send(new GetWebScrapeJobStatusQuery(new Domain.Entities.WebScrapingTaskEntity.WebScrapingTaskId(webScrapeTaskId)), cancellationToken);
         return Ok(Result.Success(result));
     }
+
+    [HttpGet("get-web-scraped-microsoft-jobs")]
+    public async Task<IActionResult> GetWebScrapedMicrosoftJobs([FromQuery(Name = "page-number")] int pageNumber, [FromQuery(Name = "page-size")] int pageSize, CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetWebScrapedMicrosoftJobsQuery(pageNumber, pageSize), cancellationToken);
+        return Ok(Result.Success(result));
+    }
 }
  
