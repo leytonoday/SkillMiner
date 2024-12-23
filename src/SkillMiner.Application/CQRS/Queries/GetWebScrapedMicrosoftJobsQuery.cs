@@ -15,10 +15,11 @@ public class GetWebScrapedJobsByCompanyQueryHandler
 
         return new PagedResponse<MicrosoftJobListing>()
         {
-            Data = jobListings,
+            Items = jobListings,
             PageNumber = request.PageNumber,
             PageSize = request.PageSize,
-            TotalCount = totalJobListings,
+            TotalItemsInPage = jobListings.Count(),
+            TotalItems = totalJobListings,
             HasNextPage = ((request.PageNumber + 1) * request.PageSize) <= totalJobListings,
         };
     }

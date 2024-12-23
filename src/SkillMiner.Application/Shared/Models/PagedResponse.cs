@@ -8,7 +8,9 @@ public class PagedResponse<T>
 
     public int PageNumber { get; set; }
 
-    public int TotalCount { get; set; }
+    public int TotalItemsInPage { get; set; }
+
+    public int TotalItems { get; set; }
 
     public bool HasNextPage { get; set; }
 }
