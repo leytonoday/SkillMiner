@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SkillMiner.Domain.Entities.BackgroundTaskEntity;
 using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
-using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
 using SkillMiner.Infrastructure.CommandQueue;
 
 namespace SkillMiner.Infrastructure.Persistence;
@@ -17,5 +17,5 @@ public sealed class DatabaseContext(DbContextOptions<DatabaseContext> options) :
 
     public DbSet<MicrosoftJobListing> MicrosoftJobListings { get; set; }
 
-    public DbSet<WebScrapingTask> WebScrapingTasks { get; set; }
+    public DbSet<BackgroundTask> BackgroundTask { get; set; }
 }

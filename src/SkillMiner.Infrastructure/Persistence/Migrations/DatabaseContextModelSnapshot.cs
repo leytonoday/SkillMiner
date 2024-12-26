@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SkillMiner.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace SkillMiner.Infrastructure.Migrations
+namespace SkillMiner.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241221135913_Init")]
-    partial class Init
+    partial class DatabaseContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,6 +50,46 @@ namespace SkillMiner.Infrastructure.Migrations
                     b.ToTable("CommandQueueMessages", (string)null);
                 });
 
+            modelBuilder.Entity("SkillMiner.Domain.Entities.BackgroundTaskEntity.BackgroundTask", b =>
+                {
+                    b.Property<int>("DatabaseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DatabaseId"));
+
+                    b.Property<DateTime?>("CompletedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("StartedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("DatabaseId");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasDatabaseName("IX_BackgroundTask_Id");
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Id"), false);
+
+                    b.ToTable("BackgroundTask", (string)null);
+                });
+
             modelBuilder.Entity("SkillMiner.Domain.Entities.MicrosoftJobListingEntity.MicrosoftJobListing", b =>
                 {
                     b.Property<int>("DatabaseId")
@@ -60,6 +97,9 @@ namespace SkillMiner.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DatabaseId"));
+
+                    b.Property<Guid>("BackgroundTaskId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Benefits")
                         .HasColumnType("nvarchar(max)");
@@ -113,9 +153,6 @@ namespace SkillMiner.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("WebScrapingTaskId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("WorkSite")
                         .HasColumnType("nvarchar(max)");
 
@@ -128,46 +165,6 @@ namespace SkillMiner.Infrastructure.Migrations
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Id"), false);
 
                     b.ToTable("MicrosoftJobListing", (string)null);
-                });
-
-            modelBuilder.Entity("SkillMiner.Domain.Entities.WebScrapingTaskEntity.WebScrapingTask", b =>
-                {
-                    b.Property<int>("DatabaseId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DatabaseId"));
-
-                    b.Property<DateTime?>("CompletedOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("StartedOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("DatabaseId");
-
-                    b.HasIndex("Id")
-                        .IsUnique()
-                        .HasDatabaseName("IX_WebScrapingTask_Id");
-
-                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Id"), false);
-
-                    b.ToTable("WebScrapingTask", (string)null);
                 });
 #pragma warning restore 612, 618
         }

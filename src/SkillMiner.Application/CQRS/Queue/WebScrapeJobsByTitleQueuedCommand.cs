@@ -1,15 +1,15 @@
 ﻿using SkillMiner.Application.Abstractions.CommandQueue;
 using SkillMiner.Application.Services.WebScraper;
+using SkillMiner.Domain.Entities.BackgroundTaskEntity;
 using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
-using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
 using SkillMiner.Domain.Shared.Persistence;
 
 namespace SkillMiner.Application.CQRS.Queue;
 
-public sealed record WebScrapeJobsByTitleQueuedCommand(string JobTitle, WebScrapingTaskId WebScrapingTaskId) : QueuedCommand;
+public sealed record WebScrapeJobsByTitleQueuedCommand(string JobTitle, BackgroundTaskId BackgroundTaskId) : QueuedCommand;
 
 public sealed class WebScrapeJobsByTitleQueuedCommandHandler
-    (IWebScrapingTaskRepository webScrapingTaskRepository,
+    (IBackgroundTaskRepository backgroundTaskRepository,
     IJobListingWebScraper<MicrosoftJobListing> microsoftJobListingWebScaper,
     IMicrosoftJobListingRepository microsoftJobListingRepository,
     IUnitOfWork unitOfWork)
@@ -17,29 +17,29 @@ public sealed class WebScrapeJobsByTitleQueuedCommandHandler
 {
     public async Task Handle(WebScrapeJobsByTitleQueuedCommand request, CancellationToken cancellationToken)
     {
-        var webScrapingTask = await webScrapingTaskRepository.GetByIdAsync(request.WebScrapingTaskId, cancellationToken)
-            ?? throw new Exception("WebScrapingTaskJob Not Found");
+        var backgroundTask = await backgroundTaskRepository.GetByIdAsync(request.BackgroundTaskId, cancellationToken)
+            ?? throw new Exception("BackgroundTask Not Found");
 
-        webScrapingTask.MarkAsStarted();
+        backgroundTask.MarkAsStarted();
         await unitOfWork.CommitAsync(cancellationToken);
 
         try
         {
-            var webScraperInput = new JobListingWebScraperInput(webScrapingTask.Id, request.JobTitle);
+            var webScraperInput = new JobListingWebScraperInput(backgroundTask.Id, request.JobTitle);
 
             var result = await microsoftJobListingWebScaper.ScrapeAsync(webScraperInput, cancellationToken);
 
             // Failed for any reason.
             if (!result.IsSuccess)
             {
-                webScrapingTask.MarkAsFailed();
+                backgroundTask.MarkAsFailed();
                 return;
             }
 
             // Succeeded, but there are no new job listings to scrape
             if (result.IsSuccess && (result.Data is null || !result.Data.Any()))
             {
-                webScrapingTask.MarkAsCompleted();
+                backgroundTask.MarkAsCompleted();
                 return;
             }
 
@@ -48,12 +48,12 @@ public sealed class WebScrapeJobsByTitleQueuedCommandHandler
             {
                 await microsoftJobListingRepository.AddAsync(jobListing, cancellationToken);
             }
-            webScrapingTask.MarkAsCompleted();
+            backgroundTask.MarkAsCompleted();
         }
         catch
         {
             // If an exception is thrown for whatever reason (maybe a webscraping issue), then just mark the task as failed and re-throw so that the Command Queue Message Processor can try again.
-            webScrapingTask.MarkAsFailed();
+            backgroundTask.MarkAsFailed();
             throw;
         }
         finally

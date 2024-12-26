@@ -2,7 +2,7 @@
 using MediatR;
 using SkillMiner.Application.Abstractions.CommandQueue;
 using SkillMiner.Application.CQRS.Queue;
-using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
+using SkillMiner.Domain.Entities.BackgroundTaskEntity;
 using SkillMiner.Domain.Shared.Persistence;
 
 namespace SkillMiner.Application.CQRS.Commands;
@@ -22,18 +22,18 @@ public class QueueWebScrapeJobsByTitleCommandValidator : AbstractValidator<Queue
 
 public class QueueWebScrapeByJobTitleCommandHandler(
     ICommandQueueWriter commandQueueWriter,
-    IWebScrapingTaskRepository webScrapingTaskRepository,
+    IBackgroundTaskRepository backgroundTaskRepository,
     IUnitOfWork unitOfWork
     ) : IRequestHandler<QueueWebScrapeJobsByTitleCommand, Guid>
 {
     public async Task<Guid> Handle(QueueWebScrapeJobsByTitleCommand request, CancellationToken cancellationToken)
     {
-        var webScrapingTask = WebScrapingTask.CreateNew();
-        await webScrapingTaskRepository.AddAsync(webScrapingTask, cancellationToken);
+        var backgroundTask = BackgroundTask.CreateNew();
+        await backgroundTaskRepository.AddAsync(backgroundTask, cancellationToken);
 
-        await commandQueueWriter.WriteAsync(new WebScrapeJobsByTitleQueuedCommand(request.JobTitle, webScrapingTask.Id), cancellationToken);
+        await commandQueueWriter.WriteAsync(new WebScrapeJobsByTitleQueuedCommand(request.JobTitle, backgroundTask.Id), cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
 
-        return webScrapingTask.Id.Value;
+        return backgroundTask.Id.Value;
     }
 }

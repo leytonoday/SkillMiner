@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using SkillMiner.Infrastructure.Shared;
-using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
 using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
+using SkillMiner.Domain.Entities.BackgroundTaskEntity;
 
 namespace SkillMiner.Infrastructure.Persistence.EntityConfiguration;
 
@@ -31,8 +31,8 @@ internal sealed class MicrosoftJobListingConfiguration : IEntityTypeConfiguratio
             .IsUnique();
         #endregion
 
-        builder.Property(e => e.WebScrapingTaskId)
-            .HasConversion(id => id.Value, value => new WebScrapingTaskId(value))
+        builder.Property(e => e.BackgroundTaskId)
+            .HasConversion(id => id.Value, value => new BackgroundTaskId(value))
             .IsRequired();
     }
 }

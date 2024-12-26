@@ -1,4 +1,4 @@
-﻿using SkillMiner.Domain.Entities.WebScrapingTaskEntity;
+﻿using SkillMiner.Domain.Entities.BackgroundTaskEntity;
 using SkillMiner.Domain.Shared.Entities;
 
 namespace SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
@@ -54,12 +54,12 @@ public class MicrosoftJobListing : Entity<MicrosoftJobListingId>
     public DateTime? DatePosted { get; private set; }
 
     /// <summary>
-    /// The Id of the <see cref="WebScrapingTask"/> that created this entity.
+    /// The Id of the <see cref="BackgroundTask"/> that created this entity.
     /// </summary>
-    public WebScrapingTaskId WebScrapingTaskId { get; private set; } = null!;
+    public BackgroundTaskId BackgroundTaskId { get; private set; } = null!;
 
     public static MicrosoftJobListing CreateNew(
-        WebScrapingTaskId webScrapingTaskId,
+        BackgroundTaskId backgroundTaskId,
         string title,
         int jobNumber,
         string url,
@@ -79,7 +79,7 @@ public class MicrosoftJobListing : Entity<MicrosoftJobListingId>
         return new MicrosoftJobListing
         {
             Id = new MicrosoftJobListingId(Guid.NewGuid()),
-            WebScrapingTaskId = webScrapingTaskId,
+            BackgroundTaskId = backgroundTaskId,
             Title = title,
             JobNumber = jobNumber,
             DatePosted = datePosted,
