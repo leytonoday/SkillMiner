@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SkillMiner.Application.CQRS.Commands;
 using SkillMiner.Application.CQRS.Queries;
 using SkillMiner.Application.Shared.Results;
-using SkillMiner.Domain.Shared.ValueObjects;
 
 namespace SkillMiner.Presentation.Web.Controllers;
 
