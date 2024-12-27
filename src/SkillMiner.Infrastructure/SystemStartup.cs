@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
-using Quartz.Impl;
 using SkillMiner.Infrastructure.BackgroundJobs;
-using System.Collections.Specialized;
-using System.Reflection;
 
 namespace SkillMiner.Infrastructure;
 

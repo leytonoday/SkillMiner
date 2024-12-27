@@ -2,11 +2,9 @@
 using Microsoft.Extensions.Logging;
 using SkillMiner.Application.Services.WebScraper;
 using SkillMiner.Application.Shared.Results;
-using SkillMiner.Domain.Entities.BackgroundTaskEntity;
 using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
 using SkillMiner.Infrastructure.WebScrapers.WebScraperHelper;
 using System.Text;
-using System.Web;
 
 namespace SkillMiner.Infrastructure.WebScrapers.JobListingWebScraper;
 
@@ -23,9 +21,9 @@ internal partial class MicrosoftJobListingWebScraper
     {
         List<int> alreadyScrapedJobItemNumbers = await microsoftJobListingRepository.GetAllJobNumbersAsync(cancellationToken);
 
-        IEnumerable<int> newJobItemNumbers = await GetJobItemNumbersFromMicrosoftAsync(input.JobTitle, 2, alreadyScrapedJobItemNumbers, cancellationToken);
+        IEnumerable<int> newJobItemNumbers = await GetJobItemNumbersFromMicrosoftAsync(input.JobTitle, 1, alreadyScrapedJobItemNumbers, cancellationToken);
 
-        IEnumerable<MicrosoftJobListing> newJobListings = await GetJobDataAsync(newJobItemNumbers, input.BackgroundTaskId, cancellationToken);
+        IEnumerable<MicrosoftJobListing> newJobListings = await GetJobDataAsync(newJobItemNumbers, cancellationToken);
 
         return Result.Success(newJobListings);
     }
@@ -54,7 +52,7 @@ internal partial class MicrosoftJobListingWebScraper
             if (jobNodes == null || jobNodes.Count == 0)
             {
                 logger.LogInformation("No job postings found.");
-                throw new BackgroundTaskException("Could not find Job Nodes");
+                throw new Exception("Could not find Job Nodes");
             }
 
             // Use a regular expression to extract valid "Job item <number>" strings
@@ -133,7 +131,7 @@ internal partial class MicrosoftJobListingWebScraper
     }
 
 
-    async Task<IEnumerable<MicrosoftJobListing>> GetJobDataAsync(IEnumerable<int> jobItemNumbers, BackgroundTaskId backgroundTaskId, CancellationToken cancellationToken)
+    async Task<IEnumerable<MicrosoftJobListing>> GetJobDataAsync(IEnumerable<int> jobItemNumbers, CancellationToken cancellationToken)
     {
         string baseUrl = "https://jobs.careers.microsoft.com/global/en/job";
 
@@ -226,7 +224,6 @@ internal partial class MicrosoftJobListingWebScraper
             benefits = benefitsBuilder.ToString();
 
             return MicrosoftJobListing.CreateNew(
-                backgroundTaskId,
                 jobTitle,
                 jobItemNumber,
                 url,

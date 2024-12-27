@@ -1,19 +1,17 @@
 ﻿using Polly.Retry;
 using Polly;
 using Quartz;
-using System.Threading;
 using SkillMiner.Application.Abstractions.CommandQueue;
 using SkillMiner.Infrastructure.CommandQueue;
 using Microsoft.Extensions.Logging;
 using MediatR;
 using SkillMiner.Domain.Shared.Persistence;
-using SkillMiner.Infrastructure.Persistence;
 
 namespace SkillMiner.Infrastructure.BackgroundJobs;
 
 [DisallowConcurrentExecution]
 public class ProcessCommandQueueJob(
-    ICommandQueueReader commandQueueReader,
+    ICommandQueueForConsumer commandQueueForConsumer,
     ISender sender,
     ILogger<ProcessCommandQueueJob> logger,
     IUnitOfWork unitOfWork
@@ -31,7 +29,7 @@ public class ProcessCommandQueueJob(
 
     public async Task Execute(IJobExecutionContext context)
     {
-        List<CommandQueueMessage> messages = await commandQueueReader.ListPendingAsync(context.CancellationToken);
+        List<CommandQueueMessage> messages = await commandQueueForConsumer.ListPendingAsync(context.CancellationToken);
         if (messages.Count == 0)
         {
             return;
@@ -43,6 +41,9 @@ public class ProcessCommandQueueJob(
         {
             logger.LogInformation($"Processing queue message: {message.Id} {message.Type} {message.Data}");
 
+            await commandQueueForConsumer.MarkStartedAsync(message, context.CancellationToken);
+            await unitOfWork.CommitAsync(context.CancellationToken);
+
             PolicyResult result = await _retryPolicy.ExecuteAndCaptureAsync(() => sender.Send(CommandQueueMessage.ToRequest(message), context.CancellationToken));
 
             if (result.Outcome == OutcomeType.Failure)
@@ -50,11 +51,11 @@ public class ProcessCommandQueueJob(
                 // Log the exception, mark message with error, and potentially notify
                 logger.LogError(result.FinalException, "Cannot send the command for QueuedMessage with Id {messageId}", message.Id);
 
-                await commandQueueReader.MarkFailedAsync(message, result.FinalException?.ToString() ?? "Unknwon error", context.CancellationToken);
+                await commandQueueForConsumer.MarkFailedAsync(message, result.FinalException?.ToString() ?? "Unknwon error", context.CancellationToken);
                 continue;
             }
 
-            await commandQueueReader.MarkProcessedAsync(message, context.CancellationToken);
+            await commandQueueForConsumer.MarkProcessedAsync(message, context.CancellationToken);
         }
 
         await unitOfWork.CommitAsync(context.CancellationToken);

@@ -12,38 +12,25 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "BackgroundTask",
+                name: "CommandQueueMessage",
                 columns: table => new
                 {
                     DatabaseId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
+                    TrackingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Data = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProcessingStatus = table.Column<int>(type: "int", nullable: false),
                     StartedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CompletedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ProcessedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Error = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BackgroundTask", x => x.DatabaseId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CommandQueueMessages",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Data = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ProcessedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Error = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CommandQueueMessages", x => x.Id);
+                    table.PrimaryKey("PK_CommandQueueMessage", x => x.DatabaseId);
                 });
 
             migrationBuilder.CreateTable(
@@ -67,7 +54,6 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
                     Responsibilities = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Benefits = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DatePosted = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    BackgroundTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -78,9 +64,16 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BackgroundTask_Id",
-                table: "BackgroundTask",
+                name: "IX_CommandQueueMessage_Id",
+                table: "CommandQueueMessage",
                 column: "Id",
+                unique: true)
+                .Annotation("SqlServer:Clustered", false);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CommandQueueMessage_TrackingId",
+                table: "CommandQueueMessage",
+                column: "TrackingId",
                 unique: true)
                 .Annotation("SqlServer:Clustered", false);
 
@@ -96,10 +89,7 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BackgroundTask");
-
-            migrationBuilder.DropTable(
-                name: "CommandQueueMessages");
+                name: "CommandQueueMessage");
 
             migrationBuilder.DropTable(
                 name: "MicrosoftJobListing");

@@ -12,7 +12,7 @@ using SkillMiner.Infrastructure.Persistence;
 namespace SkillMiner.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241226203900_Init")]
+    [Migration("20241227001147_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -27,9 +27,11 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("SkillMiner.Application.Abstractions.CommandQueue.CommandQueueMessage", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("DatabaseId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DatabaseId"));
 
                     b.Property<DateTime>("CreatedOnUtc")
                         .HasColumnType("datetime2");
@@ -41,43 +43,24 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
                     b.Property<string>("Error")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("ProcessedOnUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CommandQueueMessages", (string)null);
-                });
-
-            modelBuilder.Entity("SkillMiner.Domain.Entities.BackgroundTaskEntity.BackgroundTask", b =>
-                {
-                    b.Property<int>("DatabaseId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ProcessingStatus")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DatabaseId"));
-
-                    b.Property<DateTime?>("CompletedOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("StartedOnUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TrackingId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedOnUtc")
                         .HasColumnType("datetime2");
@@ -86,11 +69,17 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("IX_BackgroundTask_Id");
+                        .HasDatabaseName("IX_CommandQueueMessage_Id");
 
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Id"), false);
 
-                    b.ToTable("BackgroundTask", (string)null);
+                    b.HasIndex("TrackingId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CommandQueueMessage_TrackingId");
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("TrackingId"), false);
+
+                    b.ToTable("CommandQueueMessage", (string)null);
                 });
 
             modelBuilder.Entity("SkillMiner.Domain.Entities.MicrosoftJobListingEntity.MicrosoftJobListing", b =>
@@ -100,9 +89,6 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DatabaseId"));
-
-                    b.Property<Guid>("BackgroundTaskId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Benefits")
                         .HasColumnType("nvarchar(max)");

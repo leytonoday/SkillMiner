@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using SkillMiner.Infrastructure.Shared;
 using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
-using SkillMiner.Domain.Entities.BackgroundTaskEntity;
 
 namespace SkillMiner.Infrastructure.Persistence.EntityConfiguration;
 
@@ -30,10 +29,6 @@ internal sealed class MicrosoftJobListingConfiguration : IEntityTypeConfiguratio
             .HasDatabaseName($"IX_{nameof(MicrosoftJobListing)}_Id")
             .IsUnique();
         #endregion
-
-        builder.Property(e => e.BackgroundTaskId)
-            .HasConversion(id => id.Value, value => new BackgroundTaskId(value))
-            .IsRequired();
     }
 }
 

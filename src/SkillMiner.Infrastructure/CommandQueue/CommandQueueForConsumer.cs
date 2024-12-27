@@ -4,8 +4,8 @@ using SkillMiner.Infrastructure.Persistence;
 
 namespace SkillMiner.Infrastructure.CommandQueue;
 
-/// <inheritdoc cref="ICommandQueueReader"/>
-public class CommandQueueReader(DatabaseContext databaseContext) : ICommandQueueReader
+/// <inheritdoc cref="ICommandQueueForConsumer"/>
+public class CommandQueueForConsumer(DatabaseContext databaseContext) : ICommandQueueForConsumer
 {
     private DbSet<CommandQueueMessage> GetDbSet() => databaseContext.Set<CommandQueueMessage>();
 
@@ -20,6 +20,18 @@ public class CommandQueueReader(DatabaseContext databaseContext) : ICommandQueue
             .Where(x => x.ProcessedOnUtc == null && x.Error == null)
             .OrderBy(x => x.CreatedOnUtc)
             .ToListAsync(cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public Task MarkStartedAsync(CommandQueueMessage commandQueueMessage, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var query = GetDbSet();
+
+        commandQueueMessage.MarkStarted();
+        query.Update(commandQueueMessage);
+
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc/>

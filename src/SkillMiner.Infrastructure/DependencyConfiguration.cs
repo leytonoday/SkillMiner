@@ -15,7 +15,6 @@ using SkillMiner.Infrastructure.WebScrapers.JobListingWebScraper;
 using SkillMiner.Application.Services.WebScraper;
 using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
 using SkillMiner.Infrastructure.WebScrapers.WebScraperHelper;
-using SkillMiner.Domain.Entities.BackgroundTaskEntity;
 
 namespace SkillMiner.Infrastructure;
 
@@ -52,8 +51,8 @@ public static class DependencyConfiguration
         services.AddDatabaseServices(configuration);
 
         // Command queue
-        services.AddScoped<ICommandQueueWriter, CommandQueueWriter>();
-        services.AddScoped<ICommandQueueReader, CommandQueueReader>();
+        services.AddScoped<ICommandQueueForProducer, CommandQueueForWriter>();
+        services.AddScoped<ICommandQueueForConsumer, CommandQueueForConsumer>();
 
         // Application Services
         services.AddScoped<IJobListingWebScraper<MicrosoftJobListing>, MicrosoftJobListingWebScraper>();
@@ -68,7 +67,6 @@ public static class DependencyConfiguration
 
         // Repositories
         services.AddScoped<IMicrosoftJobListingRepository, MicrosoftJobListingRepository>();
-        services.AddScoped<IBackgroundTaskRepository, BackgroundTaskRepository>();
 
         // Interceptors
         services.AddSingleton<UpdateAuditableEntitiesInterceptor>(); // Intercepts to update auditable entity properties

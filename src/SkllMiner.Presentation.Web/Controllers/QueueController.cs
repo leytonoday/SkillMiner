@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SkillMiner.Application.CQRS.Commands;
 using SkillMiner.Application.CQRS.Queries;
 using SkillMiner.Application.Shared.Results;
-using SkillMiner.Domain.Entities.BackgroundTaskEntity;
+using SkillMiner.Domain.Shared.ValueObjects;
 
 namespace SkillMiner.Presentation.Web.Controllers;
 
@@ -28,10 +28,10 @@ public class QueueController
         return Ok();
     }
 
-    [HttpGet("status")]
-    public async Task<IActionResult> GetWebScrapeJobStatus(Guid backgroundTaskId, CancellationToken cancellationToken)
+    [HttpGet("status/{trackingId}")]
+    public async Task<IActionResult> GetStatus([FromRoute] Guid trackingId, CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new GetBackgroundJobStatusQuery(new BackgroundTaskId(backgroundTaskId)), cancellationToken);
+        var result = await sender.Send(new GetCommandQueueMessageProcessingStatusQuery(trackingId), cancellationToken);
         return Ok(Result.Success(result));
     }
 }

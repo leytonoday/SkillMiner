@@ -2,7 +2,6 @@
 using MediatR;
 using SkillMiner.Application.Abstractions.CommandQueue;
 using SkillMiner.Application.CQRS.Queue;
-using SkillMiner.Domain.Entities.BackgroundTaskEntity;
 using SkillMiner.Domain.Shared.Persistence;
 
 namespace SkillMiner.Application.CQRS.Commands;
@@ -21,19 +20,15 @@ public class QueueWebScrapeJobsByTitleCommandValidator : AbstractValidator<Queue
 }
 
 public class QueueWebScrapeByJobTitleCommandHandler(
-    ICommandQueueWriter commandQueueWriter,
-    IBackgroundTaskRepository backgroundTaskRepository,
+    ICommandQueueForProducer commandQueueForProducer,
     IUnitOfWork unitOfWork
     ) : IRequestHandler<QueueWebScrapeJobsByTitleCommand, Guid>
 {
     public async Task<Guid> Handle(QueueWebScrapeJobsByTitleCommand request, CancellationToken cancellationToken)
     {
-        var backgroundTask = BackgroundTask.CreateNew();
-        await backgroundTaskRepository.AddAsync(backgroundTask, cancellationToken);
-
-        await commandQueueWriter.WriteAsync(new WebScrapeJobsByTitleQueuedCommand(request.JobTitle, backgroundTask.Id), cancellationToken);
+        Guid trackingId = await commandQueueForProducer.WriteAsync(new WebScrapeJobsByTitleQueuedCommand(request.JobTitle), cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
 
-        return backgroundTask.Id.Value;
+        return trackingId;
     }
 }

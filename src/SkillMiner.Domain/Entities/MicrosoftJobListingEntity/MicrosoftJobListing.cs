@@ -1,5 +1,4 @@
-﻿using SkillMiner.Domain.Entities.BackgroundTaskEntity;
-using SkillMiner.Domain.Shared.Entities;
+﻿using SkillMiner.Domain.Shared.Entities;
 
 namespace SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
 
@@ -53,13 +52,7 @@ public class MicrosoftJobListing : Entity<MicrosoftJobListingId>
 
     public DateTime? DatePosted { get; private set; }
 
-    /// <summary>
-    /// The Id of the <see cref="BackgroundTask"/> that created this entity.
-    /// </summary>
-    public BackgroundTaskId BackgroundTaskId { get; private set; } = null!;
-
     public static MicrosoftJobListing CreateNew(
-        BackgroundTaskId backgroundTaskId,
         string title,
         int jobNumber,
         string url,
@@ -79,7 +72,6 @@ public class MicrosoftJobListing : Entity<MicrosoftJobListingId>
         return new MicrosoftJobListing
         {
             Id = new MicrosoftJobListingId(Guid.NewGuid()),
-            BackgroundTaskId = backgroundTaskId,
             Title = title,
             JobNumber = jobNumber,
             DatePosted = datePosted,
