@@ -22,15 +22,30 @@ public class QueueController
     }
 
     [HttpPost("generate-skills-by-job-title")] 
-    public async Task<IActionResult> QueueGenerateSkillsByJobTItle(CancellationToken cancellationToken)
+    public async Task<IActionResult> QueueGenerateSkillsByJobTitle(CancellationToken cancellationToken)
     {
-        return Ok();
+        var result = await sender.Send(new QueueGenerateSkillsByJobTitleCommand(), cancellationToken);
+        return Ok(Result.Success(result));
     }
 
     [HttpGet("status/{trackingId}")]
     public async Task<IActionResult> GetStatus([FromRoute] Guid trackingId, CancellationToken cancellationToken)
     {
         var result = await sender.Send(new GetCommandQueueMessageProcessingStatusQuery(trackingId), cancellationToken);
+        return Ok(Result.Success(result));
+    }
+
+    [HttpGet("pending-and-processing")]
+    public async Task<IActionResult> GetPendingAndProcessing(CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetPendingAndProcessingCommandQueueMessagesQuery(), cancellationToken);
+        return Ok(Result.Success(result));
+    }
+
+    [HttpGet("failed")]
+    public async Task<IActionResult> GetFailed(CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetFailedCommandQueueMessagesQuery(), cancellationToken);
         return Ok(Result.Success(result));
     }
 }

@@ -6,7 +6,7 @@ using SkillMiner.Infrastructure.Persistence;
 namespace SkillMiner.Infrastructure.CommandQueue;
 
 /// <inheritdoc cref="ICommandQueueForProducer"/>
-public class CommandQueueForWriter(DatabaseContext databaseContext) : ICommandQueueForProducer 
+public class CommandQueueForWriter(DatabaseContext databaseContext) : ICommandQueueForProducer
 {
     private DbSet<CommandQueueMessage> GetDbSet() => databaseContext.Set<CommandQueueMessage>();
 
@@ -31,5 +31,31 @@ public class CommandQueueForWriter(DatabaseContext databaseContext) : ICommandQu
         var commandQueueMessage = await set.FirstOrDefaultAsync(x => x.TrackingId == trackingId, cancellationToken);
 
         return commandQueueMessage?.ProcessingStatus;
+    }
+
+    public async Task<IDictionary<Guid, ProcessingStatus>> GetPendingAndProcessingAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var set = GetDbSet();
+
+        var pendingAndProcessing = await set.Where(x => x.ProcessingStatus == ProcessingStatus.Pending || x.ProcessingStatus == ProcessingStatus.InProgress)
+            .Select(x => new
+            {
+                x.TrackingId,
+                x.ProcessingStatus,
+            }).ToDictionaryAsync(x => x.TrackingId, x => x.ProcessingStatus);
+
+        return pendingAndProcessing;
+    }
+
+    public async Task<IEnumerable<Guid>> GetFailedAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var set = GetDbSet();
+
+        var failed = await set.Where(x => x.ProcessingStatus == ProcessingStatus.Failed)
+            .Select(x => x.TrackingId).ToListAsync(cancellationToken);
+
+        return failed;
     }
 }

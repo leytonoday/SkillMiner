@@ -14,4 +14,8 @@ public interface ICommandQueueForProducer
     Task<Guid> WriteAsync(QueuedCommand queuedCommand, CancellationToken cancellationToken);
 
     Task<ProcessingStatus?> GetCommandQueueMessageProcessingStatusAsync(Guid trackingId, CancellationToken cancellationToken);
+
+    Task<IDictionary<Guid, ProcessingStatus>> GetPendingAndProcessingAsync(CancellationToken cancellationToken);
+
+    Task<IEnumerable<Guid>> GetFailedAsync(CancellationToken cancellationToken);
 }
