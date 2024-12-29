@@ -14,17 +14,17 @@ public class QueueController
     (ISender sender)
     : ControllerBase
 {
-    [HttpPost("web-scrape-jobs-by-title")]
-    public async Task<IActionResult> QueueWebScrapeJobsByTitle([FromQuery(Name = "job-title")] string jobTitle, CancellationToken cancellationToken)
+    [HttpPost("web-scrape-jobs-by-profession")]
+    public async Task<IActionResult> QueueWebScrapeJobsByProfession([FromQuery(Name = "profession")] string profession, CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new QueueWebScrapeJobsByTitleCommand(jobTitle), cancellationToken);
+        var result = await sender.Send(new QueueWebScrapeJobsByProfessionCommand(profession), cancellationToken);
         return Ok(Result.Success(result));
     }
 
-    [HttpPost("generate-skills-by-job-title")] 
-    public async Task<IActionResult> QueueGenerateSkillsByJobTitle(CancellationToken cancellationToken)
+    [HttpPost("generate-skills-by-profession")] 
+    public async Task<IActionResult> QueueGenerateSkillsByProfession(CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new QueueGenerateSkillsByJobTitleCommand(), cancellationToken);
+        var result = await sender.Send(new QueueGenerateSkillsByProfessionCommand(), cancellationToken);
         return Ok(Result.Success(result));
     }
 

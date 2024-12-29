@@ -21,7 +21,7 @@ internal partial class MicrosoftJobListingWebScraper
     {
         List<int> alreadyScrapedJobItemNumbers = await microsoftJobListingRepository.GetAllJobNumbersAsync(cancellationToken);
 
-        IEnumerable<int> newJobItemNumbers = await GetJobItemNumbersFromMicrosoftAsync(input.JobTitle, 1, alreadyScrapedJobItemNumbers, cancellationToken);
+        IEnumerable<int> newJobItemNumbers = await GetJobItemNumbersFromMicrosoftAsync(input.Profession, 1, alreadyScrapedJobItemNumbers, cancellationToken);
 
         IEnumerable<MicrosoftJobListing> newJobListings = await GetJobDataAsync(newJobItemNumbers, cancellationToken);
 
@@ -32,17 +32,17 @@ internal partial class MicrosoftJobListingWebScraper
     /// The Microsoft job board identifies job listings with "Job Item Numbers" or "Job Numbers". This method will scrape all Job Item Numbers from
     /// the Microsoft job board. 
     /// </summary>
-    /// <param name="jobTitle">The job title to search the job board for.</param>
+    /// <param name="profession">The profession to search the job board for.</param>
     /// <param name="maxPages">The upper limit of pages to search for new job listings for.</param>
     /// <param name="alreadyScrapedJobItemNumbers">A list of already webscraped job item numbers.</param>
     /// <param name="cancellationToken">Cancels the operation.</param>
     /// <returns>A list of job item numbers that have not been webscraped previously.</returns>
-    async Task<IEnumerable<int>> GetJobItemNumbersFromMicrosoftAsync(string jobTitle, int maxPages, List<int> alreadyScrapedJobItemNumbers, CancellationToken cancellationToken)
+    async Task<IEnumerable<int>> GetJobItemNumbersFromMicrosoftAsync(string profession, int maxPages, List<int> alreadyScrapedJobItemNumbers, CancellationToken cancellationToken)
     {
         int pageNumber = 1;
 
         // We search by Recent job listings first. So if we come across any Job Item Numbers that have already been webscraped, then we'll know that it's time to stop.
-        string BuildUrl(int pageNumber, string jobTitle) => "https://jobs.careers.microsoft.com/global/en/search?q=" + Uri.EscapeDataString(jobTitle) + "&l=en_us&pg=" + pageNumber + "&pgSz=20&o=Recent";
+        string BuildUrl(int pageNumber, string profession) => "https://jobs.careers.microsoft.com/global/en/search?q=" + Uri.EscapeDataString(profession) + "&l=en_us&pg=" + pageNumber + "&pgSz=20&o=Recent";
 
         IEnumerable<int> ExtractJobItemNumbersFromHtmlDocument(HtmlDocument document)
         {
@@ -80,7 +80,7 @@ internal partial class MicrosoftJobListingWebScraper
         {
             while (true)
             {
-                string url = BuildUrl(pageNumber, jobTitle);
+                string url = BuildUrl(pageNumber, profession);
 
                 string? htmlContent = await webScraperHelper.ReadWebpageToHtmlStringAsync(url, 1500, cancellationToken);
                 if (htmlContent is null)

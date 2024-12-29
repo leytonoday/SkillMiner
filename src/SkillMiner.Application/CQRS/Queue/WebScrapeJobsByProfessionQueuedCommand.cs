@@ -5,17 +5,17 @@ using SkillMiner.Domain.Shared.Persistence;
 
 namespace SkillMiner.Application.CQRS.Queue;
 
-public sealed record WebScrapeJobsByTitleQueuedCommand(string JobTitle) : QueuedCommand;
+public sealed record WebScrapeJobsByProfessionQueuedCommand(string Profession) : QueuedCommand;
 
-public sealed class WebScrapeJobsByTitleQueuedCommandHandler
+public sealed class WebScrapeJobsByProfessionQueuedCommandHandler
     (IJobListingWebScraper<MicrosoftJobListing> microsoftJobListingWebScaper,
     IMicrosoftJobListingRepository microsoftJobListingRepository,
     IUnitOfWork unitOfWork)
-    : IQueuedCommandHandler<WebScrapeJobsByTitleQueuedCommand>
+    : IQueuedCommandHandler<WebScrapeJobsByProfessionQueuedCommand>
 {
-    public async Task Handle(WebScrapeJobsByTitleQueuedCommand request, CancellationToken cancellationToken)
+    public async Task Handle(WebScrapeJobsByProfessionQueuedCommand request, CancellationToken cancellationToken)
     {
-        var webScraperInput = new JobListingWebScraperInput(request.JobTitle);
+        var webScraperInput = new JobListingWebScraperInput(request.Profession);
 
         var result = await microsoftJobListingWebScaper.ScrapeAsync(webScraperInput, cancellationToken);
 
