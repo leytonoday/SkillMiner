@@ -15,6 +15,7 @@ using SkillMiner.Infrastructure.WebScrapers.JobListingWebScraper;
 using SkillMiner.Application.Services.WebScraper;
 using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
 using SkillMiner.Infrastructure.WebScrapers.WebScraperHelper;
+using SkillMiner.Application.Services;
 
 namespace SkillMiner.Infrastructure;
 
@@ -56,6 +57,7 @@ public static class DependencyConfiguration
 
         // Application Services
         services.AddScoped<IJobListingWebScraper<MicrosoftJobListing>, MicrosoftJobListingWebScraper>();
+        services.AddScoped<ILargeLanguageModelService, OpenAiLargeLanguageModelService>();
 
         // Infrastructure Services
         services.AddScoped<IWebScraperHelper, WebScraperHelper>();
