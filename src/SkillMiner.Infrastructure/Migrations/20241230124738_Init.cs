@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SkillMiner.Infrastructure.Persistence.Migrations
+namespace SkillMiner.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration
@@ -63,6 +63,43 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
                     table.PrimaryKey("PK_MicrosoftJobListing", x => x.DatabaseId);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Profession",
+                columns: table => new
+                {
+                    DatabaseId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Profession", x => x.DatabaseId);
+                    table.UniqueConstraint("AK_Profession_Id", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProfessionKeyword",
+                columns: table => new
+                {
+                    CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProfessionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Keyword = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UpdatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProfessionKeyword", x => new { x.ProfessionId, x.Keyword, x.CreatedOnUtc });
+                    table.ForeignKey(
+                        name: "FK_ProfessionKeyword_Profession_ProfessionId",
+                        column: x => x.ProfessionId,
+                        principalTable: "Profession",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_CommandQueueMessage_Id",
                 table: "CommandQueueMessage",
@@ -83,6 +120,20 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
                 column: "Id",
                 unique: true)
                 .Annotation("SqlServer:Clustered", false);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Profession_Id",
+                table: "Profession",
+                column: "Id",
+                unique: true)
+                .Annotation("SqlServer:Clustered", false);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Profession_Name",
+                table: "Profession",
+                column: "Name",
+                unique: true)
+                .Annotation("SqlServer:Clustered", false);
         }
 
         /// <inheritdoc />
@@ -93,6 +144,12 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "MicrosoftJobListing");
+
+            migrationBuilder.DropTable(
+                name: "ProfessionKeyword");
+
+            migrationBuilder.DropTable(
+                name: "Profession");
         }
     }
 }

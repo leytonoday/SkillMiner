@@ -30,4 +30,9 @@
     <ProjectReference Include="..\SkillMiner.Application\SkillMiner.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="Persistence\Migrations\" />
+  </ItemGroup>
+
 </Project>

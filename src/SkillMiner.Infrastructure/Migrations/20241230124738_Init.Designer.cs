@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SkillMiner.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace SkillMiner.Infrastructure.Persistence.Migrations
+namespace SkillMiner.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20241230124738_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -151,6 +154,80 @@ namespace SkillMiner.Infrastructure.Persistence.Migrations
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Id"), false);
 
                     b.ToTable("MicrosoftJobListing", (string)null);
+                });
+
+            modelBuilder.Entity("SkillMiner.Domain.Entities.ProfessionEntity.Profession", b =>
+                {
+                    b.Property<int>("DatabaseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DatabaseId"));
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("UpdatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("DatabaseId");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Profession_Id");
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Id"), false);
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Profession_Name");
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Name"), false);
+
+                    b.ToTable("Profession", (string)null);
+                });
+
+            modelBuilder.Entity("SkillMiner.Domain.Entities.ProfessionEntity.ProfessionKeyword", b =>
+                {
+                    b.Property<Guid>("ProfessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Keyword")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ProfessionId", "Keyword", "CreatedOnUtc");
+
+                    b.ToTable("ProfessionKeyword", (string)null);
+                });
+
+            modelBuilder.Entity("SkillMiner.Domain.Entities.ProfessionEntity.ProfessionKeyword", b =>
+                {
+                    b.HasOne("SkillMiner.Domain.Entities.ProfessionEntity.Profession", "Profession")
+                        .WithMany("Keywords")
+                        .HasForeignKey("ProfessionId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profession");
+                });
+
+            modelBuilder.Entity("SkillMiner.Domain.Entities.ProfessionEntity.Profession", b =>
+                {
+                    b.Navigation("Keywords");
                 });
 #pragma warning restore 612, 618
         }

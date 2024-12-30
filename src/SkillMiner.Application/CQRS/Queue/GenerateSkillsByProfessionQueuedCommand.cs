@@ -1,6 +1,8 @@
 ﻿using SkillMiner.Application.Abstractions.CommandQueue;
 using SkillMiner.Application.Services;
 using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
+using SkillMiner.Domain.Entities.ProfessionEntity;
+using SkillMiner.Domain.Shared.Persistence;
 
 namespace SkillMiner.Application.CQRS.Queue;
 
@@ -8,71 +10,116 @@ public record GenerateSkillsByProfessionQueuedCommand : QueuedCommand;
 
 public class GenerateSkillsByProfessionQueuedCommandHandler(
     IMicrosoftJobListingRepository microsoftJobListingRepository,
-    ILargeLanguageModelService largeLanguageModelService
+    ILargeLanguageModelService largeLanguageModelService,
+    IProfessionRepository professionRepository,
+    IUnitOfWork unitOfWork
     ) : IQueuedCommandHandler<GenerateSkillsByProfessionQueuedCommand>
 {
     public async Task Handle(GenerateSkillsByProfessionQueuedCommand request, CancellationToken cancellationToken)
     {
-        var requirementsByProfession = await GetRequirementsByProfessionAsync(cancellationToken);
+        // Retrieve the requirements for each profession
+        IDictionary<string, List<string>> requirementsByProfession = await GetRequirementsByProfessionAsync(cancellationToken);
 
-        string prompt = @"""Extract 15 keywords from these job requirements. They should be the skills required for the job. Return a JSON array of strings.
-            For example:
-            [
-              ""C"",
-              ""C++"",
-              ""C#"",
-              ""Java"",
-              ""JavaScript"",
-              ""Python"",
-              ""Distributed Systems Architecture"",
-              ""System Deployment"",
-              ""System Monitoring"",
-              ""CS Fundamentals"",
-              ""Bachelors Degree"",
-              ""Masters Degree"",
-              ""Technical Design"",
-              ""Problem Solving"",
-              ""Debugging Skills"",
-              ""Software Quality Assurance"",
-              ""Microsoft Azure"",
-              ""AWS"",
-              ""Cloud Security"",
-              ""Communication Skills""
-            ]
-            """;
+        // Generate the prompt used for extracting keywords
+        string prompt = CreatePrompt();
 
-        var keywordsByProfession = new Dictionary<string, List<List<string>>>();
-
-        foreach ((string profession, IEnumerable<string> requirements) in requirementsByProfession)
+        // Process each profession and its associated requirements
+        foreach (var (professionName, requirements) in requirementsByProfession)
         {
-            var batchSize = 10; // Adjust batch size based on your system capacity.
-            var requirementsList = requirements.ToList();
-            var batchCount = (int)Math.Ceiling(requirementsList.Count / (double)batchSize);
+            await ProcessProfessionAsync(professionName, requirements, prompt, cancellationToken);
+        }
 
-            if (!keywordsByProfession.ContainsKey(profession))
-            {
-                keywordsByProfession[profession] = [];
-            }
+        // Commit changes to the database
+        await unitOfWork.CommitAsync(cancellationToken);
+    }
 
-            for (int i = 0; i < batchCount; i++)
-            {
-                // Get the current batch of requirements
-                var batch = requirementsList.Skip(i * batchSize).Take(batchSize).ToList();
+    private static string CreatePrompt()
+    {
+        // Prompt template for extracting 15 keywords from job requirements
+        return @"""Extract 15 keywords from these job requirements. They should be the skills required for the job. Return a JSON array of strings.
+        For example:
+        [
+          ""C"",
+          ""C++"",
+          ""C#"",
+          ""Java"",
+          ""JavaScript"",
+          ""Python"",
+          ""Distributed Systems Architecture"",
+          ""System Deployment"",
+          ""System Monitoring"",
+          ""CS Fundamentals"",
+          ""Bachelors Degree"",
+          ""Masters Degree"",
+          ""Technical Design"",
+          ""Problem Solving"",
+          ""Debugging Skills"",
+          ""Software Quality Assurance"",
+          ""Microsoft Azure"",
+          ""AWS"",
+          ""Cloud Security"",
+          ""Communication Skills""
+        ]
+        """;
+    }
 
-                // Create a list of tasks for this batch
-                var tasks = batch.Select(requirement => largeLanguageModelService.ConvertToKeywordsAsync(requirement, prompt, cancellationToken)).ToList();
+    private async Task ProcessProfessionAsync(string professionName, IEnumerable<string> requirements, string prompt, CancellationToken cancellationToken)
+    {
+        // Retrieve the profession or create a new one if it doesn't exist
+        var profession = await GetOrCreateProfessionAsync(professionName, cancellationToken);
 
-                // Wait for all tasks to complete in parallel
-                var keywordsForBatch = await Task.WhenAll(tasks);
+        const int batchSize = 10; // Maximum number of requirements processed in one batch
+        var requirementsList = requirements.ToList();
+        int batchCount = (int)Math.Ceiling(requirementsList.Count / (double)batchSize);
 
-                // Process the results
-                foreach (IEnumerable<string> keywords in keywordsForBatch)
-                {
-                    keywordsByProfession[profession].Add(keywords.ToList());
-                }
-            }
+        // Process requirements in batches
+        for (int i = 0; i < batchCount; i++)
+        {
+            var batch = requirementsList.Skip(i * batchSize).Take(batchSize).ToList();
+            await ProcessBatchAsync(profession, batch, prompt, cancellationToken);
+        }
+
+        // Save changes to the profession
+        await SaveProfessionAsync(profession, cancellationToken);
+    }
+
+    private async Task<Profession> GetOrCreateProfessionAsync(string professionName, CancellationToken cancellationToken)
+    {
+        // Try to fetch an existing profession, or create a new one if it doesn't exist
+        var profession = await professionRepository.GetByNameAsync(professionName, cancellationToken);
+        return profession ?? Profession.Create(professionName);
+    }
+
+    private async Task ProcessBatchAsync(Profession profession, List<string> batch, string prompt, CancellationToken cancellationToken)
+    {
+        // Convert each requirement in the batch to a list of keywords using the LLM service
+        var tasks = batch.Select(requirement =>
+            largeLanguageModelService.ConvertToKeywordsAsync(requirement, prompt, 15, cancellationToken)).ToList();
+
+        // Wait for all keyword extraction tasks to complete
+        var keywordsForBatch = await Task.WhenAll(tasks);
+
+        // Add extracted keywords to the profession
+        foreach (var keywords in keywordsForBatch)
+        {
+            profession.AddKeywords(keywords.Select(keyword =>
+                ProfessionKeyword.Create(keyword, profession.Id)).ToList());
         }
     }
+
+    private async Task SaveProfessionAsync(Profession profession, CancellationToken cancellationToken)
+    {
+        // Save the profession: add if it's new, or update if it already exists
+        if (profession.CreatedOnUtc == default)
+        {
+            await professionRepository.AddAsync(profession, cancellationToken);
+        }
+        else
+        {
+            await professionRepository.UpdateAsync(profession, cancellationToken);
+        }
+    }
+
 
     public async Task<IDictionary<string, List<string>>> GetRequirementsByProfessionAsync(CancellationToken cancellationToken)
     {

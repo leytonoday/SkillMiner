@@ -137,7 +137,7 @@ internal partial class MicrosoftJobListingWebScraper
 
         var newJobListings = new List<MicrosoftJobListing>();
 
-        MicrosoftJobListing? ExtractJobDataFromHtml(HtmlDocument document, int jobItemNumber, string url)
+        static MicrosoftJobListing? ExtractJobDataFromHtml(HtmlDocument document, int jobItemNumber, string url)
         {
             HtmlNode? searchJobDetailsCardNode = document.DocumentNode.SelectSingleNode("//div[contains(@class, 'SearchJobDetailsCard')]");
             if (searchJobDetailsCardNode is null)
@@ -241,8 +241,10 @@ internal partial class MicrosoftJobListingWebScraper
                 benefits);
         }
 
-        foreach (int jobItemNumber in jobItemNumbers)
+        for (int i = 0; i < jobItemNumbers.Count(); i++)
         {
+            int jobItemNumber = jobItemNumbers.ElementAt(i);
+
             string url = $"{baseUrl}/{jobItemNumber}";
 
             string? htmlContent = await webScraperHelper.ReadWebpageToHtmlStringAsync(url, 3000, cancellationToken);
@@ -258,7 +260,7 @@ internal partial class MicrosoftJobListingWebScraper
             if (jobListing is not null)
             {
                 newJobListings.Add(jobListing);
-                logger.LogInformation("JobListing Created for Job Item Number {number}", jobItemNumber);
+                logger.LogInformation("{currentIndex}/{total} - JobListing Created for Job Item Number {number}", i, jobItemNumbers.Count(), jobItemNumber);
             }
 
             // Wait for a few seconds to prevent rate limiting.

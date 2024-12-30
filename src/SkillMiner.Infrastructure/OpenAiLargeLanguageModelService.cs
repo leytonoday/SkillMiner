@@ -9,7 +9,7 @@ public class OpenAiLargeLanguageModelService
     (IConfiguration configuration)
     : ILargeLanguageModelService
 {
-    public async Task<IEnumerable<string>> ConvertToKeywordsAsync(string textToConvert, string prompt, CancellationToken cancellationToken)
+    public async Task<IEnumerable<string>> ConvertToKeywordsAsync(string textToConvert, string prompt, int maxKeywords, CancellationToken cancellationToken)
     {
         string openAiApiKey = configuration["ApiKeys:OpenAi"]
             ?? throw new Exception("OpenAI Api Key not set");
@@ -33,7 +33,7 @@ public class OpenAiLargeLanguageModelService
 
         string jsonArray = responseString.Substring(startOfArray, endOfArray - startOfArray);
 
-        return JsonSerializer.Deserialize<IEnumerable<string>>(jsonArray) ?? [];
+        return (JsonSerializer.Deserialize<IEnumerable<string>>(jsonArray) ?? []).Take(maxKeywords);
     }
 
     public Task<IEnumerable<float>> CreateEmbeddingsAsync(string text, CancellationToken cancellationToken)

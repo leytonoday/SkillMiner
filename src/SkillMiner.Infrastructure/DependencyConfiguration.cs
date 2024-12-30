@@ -16,6 +16,7 @@ using SkillMiner.Application.Services.WebScraper;
 using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
 using SkillMiner.Infrastructure.WebScrapers.WebScraperHelper;
 using SkillMiner.Application.Services;
+using SkillMiner.Domain.Entities.ProfessionEntity;
 
 namespace SkillMiner.Infrastructure;
 
@@ -69,6 +70,7 @@ public static class DependencyConfiguration
 
         // Repositories
         services.AddScoped<IMicrosoftJobListingRepository, MicrosoftJobListingRepository>();
+        services.AddScoped<IProfessionRepository, ProfessionRepository>();
 
         // Interceptors
         services.AddSingleton<UpdateAuditableEntitiesInterceptor>(); // Intercepts to update auditable entity properties

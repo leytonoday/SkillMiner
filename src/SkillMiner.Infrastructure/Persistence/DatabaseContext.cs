@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SkillMiner.Application.Abstractions.CommandQueue;
-using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
 
 namespace SkillMiner.Infrastructure.Persistence;
 
@@ -11,8 +9,4 @@ public sealed class DatabaseContext(DbContextOptions<DatabaseContext> options) :
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
     }
-
-    public DbSet<CommandQueueMessage> CommandQueueMessages { get; set; }
-
-    public DbSet<MicrosoftJobListing> MicrosoftJobListings { get; set; }
 }

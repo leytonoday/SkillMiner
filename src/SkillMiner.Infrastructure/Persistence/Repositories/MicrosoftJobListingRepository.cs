@@ -8,15 +8,11 @@ public sealed class MicrosoftJobListingRepository(DatabaseContext context)
 {
     public Task<List<int>> GetAllJobNumbersAsync(CancellationToken cancellationToken)
     {
-        IQueryable<MicrosoftJobListing> query = DbSet;
-
         return DbSet.Select(x => x.JobNumber).ToListAsync(cancellationToken);
     }
 
     public async Task<(IEnumerable<MicrosoftJobListing>, int)> GetPageAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        IQueryable<MicrosoftJobListing> query = DbSet;
-
         int total = await DbSet.CountAsync(cancellationToken);
 
         IEnumerable<MicrosoftJobListing> paginatedEntities = await DbSet
