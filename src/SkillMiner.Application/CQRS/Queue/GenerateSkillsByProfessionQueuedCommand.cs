@@ -18,7 +18,7 @@ public class GenerateSkillsByProfessionQueuedCommandHandler(
     public async Task Handle(GenerateSkillsByProfessionQueuedCommand request, CancellationToken cancellationToken)
     {
         // Retrieve the requirements for each profession
-        IDictionary<string, List<string>> requirementsByProfession = await GetRequirementsByProfessionAsync(cancellationToken);
+        IDictionary<string, List<string>> requirementsByProfession = await GetRequirementsByProfessionAndMarkAsProcessedAsync(cancellationToken);
 
         // Generate the prompt used for extracting keywords
         string prompt = CreatePrompt();
@@ -121,12 +121,17 @@ public class GenerateSkillsByProfessionQueuedCommandHandler(
     }
 
 
-    public async Task<IDictionary<string, List<string>>> GetRequirementsByProfessionAsync(CancellationToken cancellationToken)
+    public async Task<IDictionary<string, List<string>>> GetRequirementsByProfessionAndMarkAsProcessedAsync(CancellationToken cancellationToken)
     {
         var requirementsByProfession = new Dictionary<string, List<string>>();
 
         // Get the 50 most recent microsoft job listings
         var recentMicrosoftJobListings = (await microsoftJobListingRepository.GetPageAsync(0, 50, cancellationToken)).Item1;
+
+        foreach(var listing in recentMicrosoftJobListings)
+        {
+            listing.MarkProcessed();
+        }
 
         return recentMicrosoftJobListings
             .Where(x => x.Profession is not null && x.Qualifications is not null)

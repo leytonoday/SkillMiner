@@ -1,16 +1,18 @@
-﻿using SkillMiner.Domain.Shared.Entities;
+﻿using SkillMiner.Domain.Entities.Shared;
+using SkillMiner.Domain.Shared.Entities;
 
 namespace SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
 
 /// <summary>
 /// Job Listing information webscraped from the Microsoft Careers Job Board.
 /// </summary>
-public class MicrosoftJobListing : Entity<MicrosoftJobListingId>
+public class MicrosoftJobListing : Entity<MicrosoftJobListingId>, IJobListing
 {
-    /// <summary>
-    /// The URL of the Webpage that the job listing from scraped from.
-    /// </summary>
+    /// <inheritdoc/>
     public string Url { get; private set; } = null!;
+
+    /// <inheritdoc/>
+    public bool HadKeywordsExtracted { get; private set; }
 
     public string? Title { get; private set; }
 
@@ -51,7 +53,7 @@ public class MicrosoftJobListing : Entity<MicrosoftJobListingId>
     public string? Benefits { get; private set; }
 
     public DateTime? DatePosted { get; private set; }
-
+    
     public static MicrosoftJobListing CreateNew(
         string title,
         int jobNumber,
@@ -93,5 +95,10 @@ public class MicrosoftJobListing : Entity<MicrosoftJobListingId>
     public override bool IsValid()
     {
         throw new NotImplementedException();
+    }
+
+    public void MarkProcessed()
+    {
+        HadKeywordsExtracted = true;
     }
 }

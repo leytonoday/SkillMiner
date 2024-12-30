@@ -2,6 +2,7 @@
 using MediatR;
 using SkillMiner.Application.Abstractions.CommandQueue;
 using SkillMiner.Application.CQRS.Queue;
+using SkillMiner.Domain.Entities.MicrosoftJobListingEntity;
 using SkillMiner.Domain.Shared.Persistence;
 
 namespace SkillMiner.Application.CQRS.Commands;

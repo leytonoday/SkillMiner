@@ -103,14 +103,6 @@ internal partial class MicrosoftJobListingWebScraper
                     allJobItemNumbers.Add(jobItemNumber);
                 }
 
-                // If we come across any job item numbers in this page that have already been webscraped, then we know that we've
-                // exhausted the new job listings, because we're sorting by "Recent". We break here, presuming that we've already
-                // scraped everything past this point.
-                if (alreadyScrapedJobItemNumbers.Intersect(jobItemNumbers).Any())
-                {
-                    break;
-                }
-
                 logger.LogInformation("Page " + pageNumber + ", Added: " + string.Join(", ", jobItemNumbers));
 
                 pageNumber++;

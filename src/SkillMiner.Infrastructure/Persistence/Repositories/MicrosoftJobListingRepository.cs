@@ -23,4 +23,13 @@ public sealed class MicrosoftJobListingRepository(DatabaseContext context)
 
         return (paginatedEntities, total);
     }
+
+    public async Task<bool> HasUnprocessedJobListingsAsync(CancellationToken cancellationToken)
+    {
+        int unprocessedCount = await DbSet
+            .Where(x => x.HadKeywordsExtracted == false)
+            .CountAsync(cancellationToken);
+
+        return unprocessedCount > 0;
+    }
 }
