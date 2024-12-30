@@ -10,7 +10,7 @@ The system is designed to inform professionals which skills are in-demand curren
 
 - Repositories
 - Aggregate Root Entities (although, currently only using an `Entity` class to represent an aggregate root as well as entities on the aggregate root. I'll consider maybe making a separate class for it.)
-- Strongly Typed Ids (GUIDs on a non-PK column, but with an index for past access. Then with a shadow integer primary key that isn't on the domain model.)
+- Strongly Typed Ids (GUIDs on a non-PK column, but with an index for fast access. Then with a shadow integer primary key that isn't on the domain model.)
 - Value Objects
 - Domain Events. I don't really have much of a use-case for them at the moment, but the system is setup to support them. Might be useful when experimenting.
 
