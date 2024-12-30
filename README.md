@@ -1,6 +1,6 @@
 # SkillMiner
 
-This is project is used as a playground for experimenting with patterns from DDD and an implementation of Clean Architecture.
+This project is used as a playground for experimenting with patterns from DDD and an implementation of Clean Architecture.
 
 ## What Does it Do?
 
