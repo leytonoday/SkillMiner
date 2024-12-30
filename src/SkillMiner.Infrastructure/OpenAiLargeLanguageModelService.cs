@@ -35,9 +35,4 @@ public class OpenAiLargeLanguageModelService
 
         return (JsonSerializer.Deserialize<IEnumerable<string>>(jsonArray) ?? []).Take(maxKeywords);
     }
-
-    public Task<IEnumerable<float>> CreateEmbeddingsAsync(string text, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
 }

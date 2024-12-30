@@ -14,6 +14,4 @@ public interface ILargeLanguageModelService
     /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
     /// <returns>A task representing the asynchronous operation that yields a collection of keywords.</returns>
     public Task<IEnumerable<string>> ConvertToKeywordsAsync(string textToConvert, string prompt, int maxKeywords, CancellationToken cancellationToken);
-
-    public Task<IEnumerable<float>> CreateEmbeddingsAsync(string text, CancellationToken cancellationToken);
 }
