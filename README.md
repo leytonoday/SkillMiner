@@ -21,3 +21,7 @@ The system is designed to inform professionals which skills are in-demand curren
 - Domain Services - Don't really have much of a need for theses at the minute.
 
 - Factories - The only aggregate at the moment is pretty simple, so again there's not much use for this currently.
+
+## TODOs
+
+- Consider making the PK of the entities the Id (guid) rather than the DatabaseId (integer), and only using the DatabaseId for identity and the clustered index.
